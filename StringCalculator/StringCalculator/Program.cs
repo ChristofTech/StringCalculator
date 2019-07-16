@@ -21,13 +21,13 @@ namespace StringCalculator
                 MatchCollection rgxRemoveBracketMC = Regex.Matches(delimRule, rgxExpr);
                 for (int i = 0; i < rgxRemoveBracketMC.Count; i++)
                 {
-                    delimInList.Add(rgxRemoveBracketMC[i].ToString());
+                    delimInList.Add(Regex.Escape(rgxRemoveBracketMC[i].ToString()));
                 }
 
                 // If no containing brackets are detected, default to the entire string
                 if (delimInList.Count == 0)
                 {
-                    delimInList.Add(delimRule);
+                    delimInList.Add(Regex.Escape(delimRule));
                 }
             }
 
@@ -58,7 +58,6 @@ namespace StringCalculator
             {
                 input = "0";
             }
-            input = input.Replace(@" ", "");
 
 
             // Find all the negatives in the inputted string
@@ -81,20 +80,32 @@ namespace StringCalculator
                 Console.WriteLine("negatives not allowed: " + String.Join(", ", negativeList));
             }
 
-            int sum = Program.Add(input, delimIn);
-            Console.WriteLine("= " + sum);
-        }
-
-        public static int Add(string numbers, string[] delimIn)
-        {
             // Default Delimiters
-            string[] delimDefault = new string[] { ",", "\\n" };
+            string[] delimDefault = new string[] { ",", @"\\n" };
 
-            // Concatenate the Delimiter Arrays
+            // Concatenate the default delimiter array and the inputted delimiter array
             string[] delimAll = new string[delimDefault.Length + delimIn.Length];
             delimDefault.CopyTo(delimAll, 0);
             delimIn.CopyTo(delimAll, delimDefault.Length);
-            string[] stringList = Split1(numbers, delimAll);
+
+            // Substitute all delimiters with comma for easier split later
+            string delimPattern = String.Join("|", delimAll);
+            Console.WriteLine($"Delim Pattern:'{delimPattern}'");
+
+            input = input.Replace(@" ", @"\\ ");
+            string numberStringList = Regex.Replace(input, delimPattern, ",");
+            Console.WriteLine($"Num Str List: {numberStringList}");
+            numberStringList.Replace(@" ", "");
+            Console.WriteLine($"Num Str List: {numberStringList}");
+
+
+            int sum = Program.Add(numberStringList);
+            Console.WriteLine("= " + sum);
+        }
+
+        public static int Add(string numbers)
+        {
+            string[] stringList = numbers.Split(",", StringSplitOptions.None);
 
             // Sum values of all legitimate entries
             int calcValue = 0;
@@ -125,17 +136,6 @@ namespace StringCalculator
             Console.WriteLine("End sum.");
 
             return calcValue;
-        }
-
-        public static string[] Split1(string numbers, string[] delimiter)
-        {
-            /*
-             * Split using built in split, made into a function just in case another method
-             * of splitting values is requested
-            */
-            string[] stringList = numbers.Split(delimiter, StringSplitOptions.None);
-
-            return stringList;
         }
     }
 }
