@@ -8,13 +8,7 @@ namespace StringCalculator
     {
         static void Main(string[] args)
         {
-            /*
-             * Some thoughts:
-             * - should the other delimiters, "," and "\n" still be parsed for if another default delimiter is specified
-             * - trim for space?
-            */
-
-            Console.WriteLine("Enter delimiters enclosed by brackets eg: [$]");
+            Console.WriteLine("Enter a single delimiter or multiple delimiters enclosed by brackets eg: [$]");
             Console.Write("//");
             string delimRule = Console.ReadLine();
 
@@ -56,7 +50,14 @@ namespace StringCalculator
                 }
             } while (true);
             // Remove the last line break from hitting enter twice
-            input = input.Remove(input.LastIndexOf(@"\n"));
+            if (input.Contains(@"\n"))
+            {
+                input = input.Remove(input.LastIndexOf(@"\n"));
+            }
+            else
+            {
+                input = "0";
+            }
             input = input.Replace(@" ", "");
 
 
@@ -80,19 +81,8 @@ namespace StringCalculator
                 Console.WriteLine("negatives not allowed: " + String.Join(", ", negativeList));
             }
 
-            Console.WriteLine("Input is: " + @input);
-            //input = "1\n2,3\n4$5,1001";
-
-            /*
-            string[] returnSplit = Split1(input, new string[] { ",", "\\n", "$" });
-            for (int j = 0; j < returnSplit.Length; j++)
-            {
-                Console.WriteLine(returnSplit[j]);
-            }
-            */
-
             int sum = Program.Add(input, delimIn);
-            Console.WriteLine("\n= " + sum);
+            Console.WriteLine("= " + sum);
         }
 
         public static int Add(string numbers, string[] delimIn)
@@ -107,8 +97,8 @@ namespace StringCalculator
             string[] stringList = Split1(numbers, delimAll);
 
             // Sum values of all legitimate entries
-            Console.WriteLine("---- Begin Sum ----");
             int calcValue = 0;
+            Console.WriteLine("Begin sum.");
             for (int i = 0; i < stringList.Length; i++)
             {
                 int currValue = 0;
@@ -128,15 +118,11 @@ namespace StringCalculator
 
                 if (currValue >= 0 && currValue <= 1000)
                 {
-                    Console.WriteLine("+" + currValue);
+                    Console.WriteLine($"+{currValue}");
                     calcValue += currValue;
                 }
-                else
-                {
-                    Console.WriteLine(currValue);
-                }
             }
-            Console.WriteLine("---- End Sum ----");
+            Console.WriteLine("End sum.");
 
             return calcValue;
         }
