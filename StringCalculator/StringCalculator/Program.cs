@@ -6,68 +6,12 @@ namespace StringCalculator
 {
     class Program
     {
-        public static int Add(string numbers, string[] delimIn)
-        {
-            // Default Delimiters
-            string[] delimDefault = new string[] { ",", "\\n" };
-
-            // Concatenate the Delimiter Arrays
-            string[] delimAll = new string[delimDefault.Length + delimIn.Length];
-            delimDefault.CopyTo(delimAll, 0);
-            delimIn.CopyTo(delimAll, delimDefault.Length);
-            string[] stringList = Split1(numbers, delimAll);
-
-            // Sum values of all legitimate entries
-            Console.WriteLine("---- Begin Sum ----");
-            int calcValue = 0;
-            for (int i = 0; i < stringList.Length; i++)
-            {
-                int currValue = 0;
-                // Catch exceptions when there's issues parsing or the value is not a 32 bit integer
-                try
-                {
-                    currValue = Convert.ToInt32(stringList[i]);
-                }
-                catch (System.FormatException)
-                {
-                    Console.WriteLine(stringList[i] + " is not a 32 bit integer");
-                }
-
-                if (currValue >= 0 && currValue <= 1000)
-                {
-                    Console.WriteLine("+" + currValue);
-                    calcValue += currValue;
-                }
-                else
-                {
-                    Console.WriteLine(currValue);
-                }
-            }
-            Console.WriteLine("---- End Sum ----");
-
-            return calcValue;
-        }
-
-        public static string[] Split1(string numbers, string[] delimiter)
-        {
-            /*
-             * Split using built in split, made into a function just in case another method
-             * of splitting values is requested
-            */
-            string[] stringList = numbers.Split(delimiter, StringSplitOptions.None);
-
-            return stringList;
-        }
-
         static void Main(string[] args)
         {
             /*
              * Some thoughts:
-             * - need to make the first line optional!
-             * - typo on that one line with the semi-colon
              * - should the other delimiters, "," and "\n" still be parsed for if another default delimiter is specified
              * - trim for space?
-             * - exception for using the wrong delimiter, or if the number is too big
             */
 
             Console.WriteLine("Enter delimiters enclosed by brackets eg: [$]");
@@ -85,7 +29,14 @@ namespace StringCalculator
                 {
                     delimInList.Add(rgxRemoveBracketMC[i].ToString());
                 }
+
+                // If no containing brackets are detected, default to the entire string
+                if (delimInList.Count == 0)
+                {
+                    delimInList.Add(delimRule);
+                }
             }
+
             string[] delimIn = delimInList.ToArray();
             // Returns a string array of delimiters that were inputted
 
@@ -106,6 +57,7 @@ namespace StringCalculator
             } while (true);
             // Remove the last line break from hitting enter twice
             input = input.Remove(input.LastIndexOf(@"\n"));
+            input = input.Replace(@" ", "");
 
 
             // Find all the negatives in the inputted string
@@ -141,6 +93,63 @@ namespace StringCalculator
 
             int sum = Program.Add(input, delimIn);
             Console.WriteLine("\n= " + sum);
+        }
+
+        public static int Add(string numbers, string[] delimIn)
+        {
+            // Default Delimiters
+            string[] delimDefault = new string[] { ",", "\\n" };
+
+            // Concatenate the Delimiter Arrays
+            string[] delimAll = new string[delimDefault.Length + delimIn.Length];
+            delimDefault.CopyTo(delimAll, 0);
+            delimIn.CopyTo(delimAll, delimDefault.Length);
+            string[] stringList = Split1(numbers, delimAll);
+
+            // Sum values of all legitimate entries
+            Console.WriteLine("---- Begin Sum ----");
+            int calcValue = 0;
+            for (int i = 0; i < stringList.Length; i++)
+            {
+                int currValue = 0;
+                // Catch exceptions when there's issues parsing or the value is not a 32 bit integer
+                try
+                {
+                    currValue = Convert.ToInt32(stringList[i]);
+                }
+                catch (System.FormatException)
+                {
+                    Console.WriteLine(stringList[i] + " is not a 32 bit integer");
+                }
+                catch (System.OverflowException)
+                {
+                    Console.WriteLine(stringList[i] + " is greater than 32 bits");
+                }
+
+                if (currValue >= 0 && currValue <= 1000)
+                {
+                    Console.WriteLine("+" + currValue);
+                    calcValue += currValue;
+                }
+                else
+                {
+                    Console.WriteLine(currValue);
+                }
+            }
+            Console.WriteLine("---- End Sum ----");
+
+            return calcValue;
+        }
+
+        public static string[] Split1(string numbers, string[] delimiter)
+        {
+            /*
+             * Split using built in split, made into a function just in case another method
+             * of splitting values is requested
+            */
+            string[] stringList = numbers.Split(delimiter, StringSplitOptions.None);
+
+            return stringList;
         }
     }
 }
