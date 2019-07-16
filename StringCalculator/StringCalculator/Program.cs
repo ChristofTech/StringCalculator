@@ -35,7 +35,7 @@ namespace StringCalculator
             // Returns a string array of delimiters that were inputted
 
             // Infinite while loop to read until enter is hit twice
-            Console.WriteLine("Input values, enter blank value \"\" to end entry.");
+            Console.WriteLine("Input values, press enter twice in a row to submit entry (ie: enter \"\").");
             string input = "";
             do
             {
@@ -58,7 +58,6 @@ namespace StringCalculator
             {
                 input = "0";
             }
-
 
             // Find all the negatives in the inputted string
             MatchCollection isThereNegative = Regex.Matches(input, @"-\d+");
