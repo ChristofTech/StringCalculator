@@ -90,16 +90,13 @@ namespace StringCalculator
 
             // Substitute all delimiters with comma for easier split later
             string delimPattern = String.Join("|", delimAll);
-            Console.WriteLine($"Delim Pattern:'{delimPattern}'");
 
-            input = input.Replace(@" ", @"\\ ");
-            string numberStringList = Regex.Replace(input, delimPattern, ",");
-            Console.WriteLine($"Num Str List: {numberStringList}");
-            numberStringList.Replace(@" ", "");
-            Console.WriteLine($"Num Str List: {numberStringList}");
+            input = input.Replace(@"\ ", @"\s"); //Space Delimiter
+            string numberStrReplace = Regex.Replace(input, delimPattern, ",");
+            string numberStrTrim = numberStrReplace.Replace(@" ", ""); // Trim space characters if it's not a delimiter
 
-
-            int sum = Program.Add(numberStringList);
+            
+            int sum = Program.Add(numberStrTrim);
             Console.WriteLine("= " + sum);
         }
 
@@ -129,7 +126,10 @@ namespace StringCalculator
 
                 if (currValue >= 0 && currValue <= 1000)
                 {
-                    Console.WriteLine($"+{currValue}");
+                    if (currValue > 0)
+                    {
+                        Console.WriteLine($"+{currValue}");
+                    }
                     calcValue += currValue;
                 }
             }
