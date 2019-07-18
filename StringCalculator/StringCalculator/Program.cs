@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace StringCalculator
 {
-    class Program
+    public class AddClass
     {
         static void Main(string[] args)
         {
@@ -25,9 +25,17 @@ namespace StringCalculator
                 }
             } while (true);
 
-            Console.WriteLine("-----------------------");
+            // Remove the last line break from hitting enter twice
+            if (input.Contains(@"\n") && input.Substring(input.Length - 2, 2) == @"\n")
+            {
+                input = input.Remove(input.LastIndexOf(@"\n"));
+            }
+            else
+            {
+                input = "0";
+            }
 
-            int sum = Program.Add(input);
+            int sum = AddClass.Add(input);
             Console.WriteLine("= " + sum);
             
         }
@@ -65,17 +73,6 @@ namespace StringCalculator
             // Create string array of delimiters that were inputted
             string[] delimIn = delimInList.ToArray();
 
-
-            // Remove the last line break from hitting enter twice
-            if (input.Contains(@"\n") && input.Substring(input.Length - 2, 2) == @"\n")
-            {
-                input = input.Remove(input.LastIndexOf(@"\n"));
-            }
-            else
-            {
-                input = "0";
-            }
-            Console.WriteLine("New input is: " + input);
             
             // Find all the negatives in the inputted string
             MatchCollection isThereNegative = Regex.Matches(input, @"-\d+");
