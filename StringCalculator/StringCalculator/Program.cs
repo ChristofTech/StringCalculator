@@ -11,7 +11,7 @@ namespace StringCalculator
             Console.WriteLine("Enter a single delimiter or multiple delimiters enclosed by brackets eg: [$]");
             Console.Write("//");
             string delimRule = Console.ReadLine();
-
+            
             // Regex for expressions between brackets, does not consider nested brackets
             Console.WriteLine();
             List<string> delimInList = new List<string>();
