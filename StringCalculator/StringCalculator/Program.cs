@@ -8,34 +8,9 @@ namespace StringCalculator
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Enter a single delimiter or multiple delimiters enclosed by brackets eg: [$]");
-            Console.Write("//");
-            string delimRule = Console.ReadLine();
-            
-            // Regex for expressions between brackets, does not consider nested brackets
-            Console.WriteLine();
-            List<string> delimInList = new List<string>();
-            if (delimRule != "")
-            {
-                string rgxExpr = @"(?<=\[).+?(?=\])";
-                MatchCollection rgxRemoveBracketMC = Regex.Matches(delimRule, rgxExpr);
-                for (int i = 0; i < rgxRemoveBracketMC.Count; i++)
-                {
-                    delimInList.Add(Regex.Escape(rgxRemoveBracketMC[i].ToString()));
-                }
-
-                // If no containing brackets are detected, default to the entire string
-                if (delimInList.Count == 0)
-                {
-                    delimInList.Add(Regex.Escape(delimRule));
-                }
-            }
-
-            string[] delimIn = delimInList.ToArray();
-            // Returns a string array of delimiters that were inputted
-
             // Infinite while loop to read until enter is hit twice
-            Console.WriteLine("Input values, press enter twice in a row to submit entry (ie: enter \"\").");
+            Console.WriteLine("Input values, press enter twice in a row to confirm submission (ie: enter \"\").");
+            Console.WriteLine("\n" + "Optionally, in the first line begin delimiter entry with two forward-slashes //." + "\n" + "Enter a single delimiter or multiple delimiters enclosed by brackets (eg: [$])\nthen press enter." + "\n");
             string input = "";
             do
             {
@@ -49,8 +24,50 @@ namespace StringCalculator
                     input += currInput + @"\n";
                 }
             } while (true);
+
+            Console.WriteLine("-----------------------");
+
+            int sum = Program.Add(input);
+            Console.WriteLine("= " + sum);
+            
+        }
+
+        public static int Add(string numbers)
+        {
+            string input = numbers;
+            Console.WriteLine("Input is: " + input);
+
+            List<string> delimInList = new List<string>();
+            if (input[0] == '/' && input[1] == '/')
+            {
+                Match delimLine = Regex.Match(input, @"(?<=//)(.*?)(?=\\n)");
+                string delimRule = delimLine.ToString();
+
+                // Regex for expressions between brackets, does not consider nested brackets
+                if (delimRule != "")
+                {
+                    MatchCollection rgxRemoveBracketMC = Regex.Matches(delimRule, @"(?<=\[).+?(?=\])");
+                    for (int i = 0; i < rgxRemoveBracketMC.Count; i++)
+                    {
+                        delimInList.Add(Regex.Escape(rgxRemoveBracketMC[i].ToString()));
+                    }
+
+                    // If no containing brackets are detected, default to the entire string
+                    if (delimInList.Count == 0)
+                    {
+                        delimInList.Add(Regex.Escape(delimRule));
+                    }
+                }
+
+                // Remove delimiter line now that info has been parsed
+                input = Regex.Replace(input, @"//(.*?)\\n", "");
+            }
+            // Create string array of delimiters that were inputted
+            string[] delimIn = delimInList.ToArray();
+
+
             // Remove the last line break from hitting enter twice
-            if (input.Contains(@"\n"))
+            if (input.Contains(@"\n") && input.Substring(input.Length - 2, 2) == @"\n")
             {
                 input = input.Remove(input.LastIndexOf(@"\n"));
             }
@@ -58,7 +75,8 @@ namespace StringCalculator
             {
                 input = "0";
             }
-
+            Console.WriteLine("New input is: " + input);
+            
             // Find all the negatives in the inputted string
             MatchCollection isThereNegative = Regex.Matches(input, @"-\d+");
             var negativeList = new string[isThereNegative.Count];
@@ -94,17 +112,12 @@ namespace StringCalculator
             string numberStrReplace = Regex.Replace(input, delimPattern, ",");
             string numberStrTrim = numberStrReplace.Replace(@" ", ""); // Trim space characters if it's not a delimiter
 
+            string[] stringList = numberStrTrim.Split(",", StringSplitOptions.None);
             
-            int sum = Program.Add(numberStrTrim);
-            Console.WriteLine("= " + sum);
-        }
-
-        public static int Add(string numbers)
-        {
-            string[] stringList = numbers.Split(",", StringSplitOptions.None);
 
             // Sum values of all legitimate entries
             int calcValue = 0;
+            
             Console.WriteLine("Begin sum.");
             for (int i = 0; i < stringList.Length; i++)
             {
